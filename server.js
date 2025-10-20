@@ -8,7 +8,8 @@ let app = express();
 app.use(cors());
 app.use(express.json());
 
-let UserTask = require("./models/schema.js");
+// let UserTask = require("./models/schema.js");
+const UserTask = require("./models/schema.js");
 
 // let dataObj = require("../todo-project/src/Components/Tasklist");
 // console.log(dataObj)
@@ -26,18 +27,47 @@ main();
 
 app.post("/add", async (req, res) => {
   try {
-    // let { task, des, comp } = req.body[0];
-    // console.log(task,des,comp);
     let taskAdded = await UserTask.create(req.body);
-
     console.log(taskAdded);
+    res.json(taskAdded);
+    console.log(`added this ${taskAdded}`);
   } catch (error) {
     console.log(error);
   }
 });
+//* route for all task
 
-app.get("/get", (req, res) => {
-  res.send("working..");
+app.get("/users", async (req, res) => {
+  try {
+    let data = await UserTask.find();
+    res.json(data);
+  } catch (error) {}
+});
+//* route for update one task
+app.put("/users/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let updatedObj = req.body;
+    let result = await UserTask.findByIdAndUpdate(id, updatedObj, {
+      new: true,
+    });
+    res.json(result);
+    console.log(`updated this ${result}`);
+  } catch (error) {
+    res.status(500).json({ message: "error server" });
+  }
+});
+
+//*route for delete one task
+app.delete("/users/:deleteId", async (req, res) => {
+  let deleteId = req.params.deleteId;
+  try {
+    let deletedTask = await UserTask.findByIdAndDelete(deleteId);
+    res.json(deletedTask);
+    console.log(`deleted this ${deletedTask}`);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 const PORT = process.env.PORT || 5000;
