@@ -8,11 +8,8 @@ let app = express();
 app.use(cors());
 app.use(express.json());
 
-// let UserTask = require("./models/schema.js");
 const UserTask = require("./models/schema.js");
 
-// let dataObj = require("../todo-project/src/Components/Tasklist");
-// console.log(dataObj)
 async function main() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -24,7 +21,7 @@ async function main() {
 
 // Run the connection
 main();
-
+//* route add task
 app.post("/add", async (req, res) => {
   try {
     let taskAdded = await UserTask.create(req.body);
@@ -55,6 +52,18 @@ app.put("/users/:id", async (req, res) => {
     console.log(`updated this ${result}`);
   } catch (error) {
     res.status(500).json({ message: "error server" });
+  }
+});
+
+app.put("/users/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let updatedTask = req.body;
+    let result = await UserTask.findByIdAndUpdate(id, updatedTask);
+    res.json(result);
+    console.log(result);
+  } catch (error) {
+    console.log(error);
   }
 });
 
